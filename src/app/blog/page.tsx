@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogIndexPage() {
-  const posts = await getAllPosts(24);
+  const posts = await getAllPosts(24).catch(() => []);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">

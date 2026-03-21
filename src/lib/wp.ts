@@ -12,10 +12,12 @@
  * Docs: https://www.wpgraphql.com/docs
  */
 
-const API_URL = process.env.WORDPRESS_API_URL;
-
-if (!API_URL) {
-  throw new Error("WORDPRESS_API_URL environment variable is not set.");
+// Validated at request time so the build succeeds without env vars set.
+// Set WORDPRESS_API_URL in Vercel project settings or .env.local.
+function getApiUrl(): string {
+  const url = process.env.WORDPRESS_API_URL;
+  if (!url) throw new Error("WORDPRESS_API_URL is not set. Add it to .env.local or Vercel environment variables.");
+  return url;
 }
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -73,7 +75,7 @@ async function fetchAPI<T>(
   variables?: Record<string, unknown>,
   revalidate = 60
 ): Promise<T> {
-  const res = await fetch(API_URL!, {
+  const res = await fetch(getApiUrl(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),

@@ -5,7 +5,7 @@ import { getPageBySlug, getAllPageSlugs } from "@/lib/wp";
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  const slugs = await getAllPageSlugs();
+  const slugs = await getAllPageSlugs().catch(() => []);
   return slugs.map((slug) => ({ slug }));
 }
 

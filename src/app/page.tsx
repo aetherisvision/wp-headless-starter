@@ -5,7 +5,7 @@ import Link from "next/link";
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const posts = await getAllPosts(6);
+  const posts = await getAllPosts(6).catch(() => []);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">

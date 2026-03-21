@@ -7,7 +7,7 @@ export const revalidate = 300;
 
 // Pre-generate all published post pages at build time
 export async function generateStaticParams() {
-  const slugs = await getAllPostSlugs();
+  const slugs = await getAllPostSlugs().catch(() => []);
   return slugs.map((slug) => ({ slug }));
 }
 

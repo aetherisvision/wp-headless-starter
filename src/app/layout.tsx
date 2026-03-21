@@ -13,7 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
         template: `%s | ${settings.generalSettingsTitle}`,
       },
       description: settings.generalSettingsDescription,
-      metadataBase: new URL(settings.generalSettingsUrl || "https://localhost:3000"),
+      metadataBase: new URL(
+        settings.generalSettingsUrl || process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : "http://localhost:3000"
+      ),
     };
   } catch {
     return {
