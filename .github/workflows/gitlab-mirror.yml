@@ -1,0 +1,55 @@
+name: Mirror to GitLab
+
+# GitHub is canonical. This workflow converges the private GitLab disaster-
+# recovery repository to GitHub's complete branch-and-tag state.
+on:
+  push:
+  delete:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitlab-mirror-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  GITLAB_REPO: https://gitlab.com/aetheris-vision-group/wp-headless-starter.git
+
+jobs:
+  mirror:
+    name: Mirror branches and tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out the canonical branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fetch the complete GitHub ref set
+        run: |
+          git fetch --force --prune --prune-tags origin \
+            '+refs/heads/*:refs/mirror/heads/*' \
+            '+refs/tags/*:refs/tags/*'
+
+      - name: Push the private GitLab mirror
+        env:
+          GITLAB_MIRROR_TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GITLAB_MIRROR_TOKEN:-}" ]; then
+            echo "::error::GITLAB_MIRROR_TOKEN is not configured"
+            exit 1
+          fi
+
+          git remote add gitlab \
+            "https://oauth2:${GITLAB_MIRROR_TOKEN}@${GITLAB_REPO#https://}"
+          git push gitlab --force --prune \
+            'refs/mirror/heads/*:refs/heads/*' \
+            'refs/tags/*:refs/tags/*'
