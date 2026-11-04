@@ -17,6 +17,8 @@ Editors use the familiar WP dashboard. Visitors get a Lighthouse 95+ experience.
 | Image optimization | `next/image` with remote patterns |
 | ISR | 60s (listings) / 300s (single posts) + on-demand webhook |
 
+(AV's own sites run on Google Cloud; Vercel here is the template's default for client sites.)
+
 ---
 
 ## Quick Start
